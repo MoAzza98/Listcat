@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "wlbot.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node wlbot.js"
   },
   "dependencies": {
     "discord.js": "^14.0.0",
