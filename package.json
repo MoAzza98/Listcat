@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "wlbot.js",
   "scripts": {
-    "start": "node wlbot.js"
+    "start": "node api/node wlbot.js"
   },
   "engines": {
     "node": "20.x"
