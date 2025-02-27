@@ -11,8 +11,8 @@ const { Readable } = require('stream');
 require('dotenv').config();
 
 // --- Validation for Environment Variables ---
-if (!process.env.BOT_TOKEN || !process.env.APPLICATION_ID || !process.env.GUILD_ID || !process.env.MONGO_URI || !process.env.WHITELIST_ROLE_ID || !process.env.API_KEY) {
-    console.error('❌ Missing required environment variables. Ensure BOT_TOKEN, APPLICATION_ID, GUILD_ID, MONGO_URI, WHITELIST_ROLE_ID, and API_KEY are set.');
+if (!process.env.BOT_TOKEN || !process.env.APPLICATION_ID || !process.env.GUILD_ID || !process.env.MONGO_URI || !process.env.WHITELIST_ROLE_ID || !process.env.FREE_MINT_ROLE_ID || !process.env.API_KEY) {
+    console.error('❌ Missing required environment variables. Ensure BOT_TOKEN, APPLICATION_ID, GUILD_ID, MONGO_URI, WHITELIST_ROLE_ID, FREE_MINT_ROLE_ID, and API_KEY are set.');
     process.exit(1);
 }
 
@@ -33,6 +33,12 @@ const walletSchema = new mongoose.Schema({
 });
 const Wallet = mongoose.model('Wallet', walletSchema);
 
+const freeMintSchema = new mongoose.Schema({
+    discordId: { type: String, required: true },
+    walletAddress: { type: String, required: true }
+});
+const FreeMint = mongoose.model('FreeMint', freeMintSchema);
+
 // --- Express API Setup ---
 const app = express();
 app.use(cors());
@@ -51,6 +57,13 @@ const authenticate = (req, res, next) => {
 app.get('/whitelist', authenticate, async (req, res) => {
     const wallets = await Wallet.find();
     res.json(wallets);
+});
+
+// 📌 Check if a User Has Free Mint Role
+app.get('/freemint/check/:discordId', authenticate, async (req, res) => {
+    const { discordId } = req.params;
+    const userEntry = await FreeMint.findOne({ discordId });
+    res.json({ hasFreeMint: !!userEntry });
 });
 
 // 📌 Add a Wallet to the Whitelist
